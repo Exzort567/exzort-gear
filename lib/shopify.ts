@@ -11,7 +11,7 @@ export async function fetchShopify({ query, variables } : { query: string; varia
             "X-Shopify-Storefront-Access-Token": storefrontAccessToken || "",
         },
         body: JSON.stringify({ query, variables }),
-        next: { revalidate: 3600 } // Cache for 1 hour
+        next: { revalidate: 60 } // Cache for 1 minute (faster updates during development)
     });
 
     if (!response.ok) {

@@ -42,27 +42,37 @@ export default async function ProductsPage() {
   const products = data?.products?.edges || [];
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold text-black dark:text-white mb-4">
-          All Products
-        </h1>
-        <p className="text-zinc-600 dark:text-zinc-400">
-          Explore our complete collection of premium tech gear
-        </p>
-      </div>
+    <div className="min-h-screen bg-white dark:bg-black">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {/* Header */}
+        <div className="max-w-2xl mb-16 animate-fade-in">
+          <span className="text-sm font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-2 block">
+            Our Collection
+          </span>
+          <h1 className="text-5xl font-bold text-black dark:text-white mb-4">
+            All Products
+          </h1>
+          <p className="text-lg text-neutral-500 dark:text-neutral-400">
+            Explore our curated selection of premium tech gear designed for professionals.
+          </p>
+        </div>
 
-      {products.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-zinc-600 dark:text-zinc-400">No products found.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {products.map(({ node }: any) => (
-            <ProductCard key={node.id} product={node} />
-          ))}
-        </div>
-      )}
+        {products.length === 0 ? (
+          <div className="text-center py-24">
+            <p className="text-neutral-500 dark:text-neutral-400 text-lg">
+              Connect your Shopify store to display products here.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {products.map(({ node }: any, index: number) => (
+              <div key={node.id} className={`animate-fade-in stagger-${(index % 6) + 1}`}>
+                <ProductCard product={node} />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

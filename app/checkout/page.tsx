@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useCart } from '@/lib/hooks/useCart';
 import Button from '@/components/Button';
-import { CreditCard, Lock } from 'lucide-react';
+import { CreditCard, Lock, ArrowLeft, Shield, Truck } from 'lucide-react';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -42,254 +43,285 @@ export default function CheckoutPage() {
     router.push('/checkout/success');
   };
 
+  // Format currency
+  const formatPrice = (amount: number, currency: string) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+    }).format(amount);
+  };
+
   if (cart.items.length === 0) {
     router.push('/cart');
     return null;
   }
 
+  const inputClasses = "w-full px-4 py-3 border border-neutral-200 dark:border-neutral-800 rounded-xl bg-white dark:bg-neutral-900 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition-all duration-300 placeholder:text-neutral-400";
+
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className="text-3xl font-bold text-black dark:text-white mb-8">
-        Checkout
-      </h1>
+    <div className="min-h-screen bg-neutral-50 dark:bg-black">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Back Link */}
+        <Link 
+          href="/cart" 
+          className="inline-flex items-center text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-white transition-colors mb-8 group animate-fade-in"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2 transition-transform group-hover:-translate-x-1" />
+          Back to Cart
+        </Link>
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Checkout Form */}
-        <div className="lg:col-span-2 space-y-8">
-          {/* Contact Information */}
-          <div className="p-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg">
-            <h2 className="text-xl font-bold text-black dark:text-white mb-4">
-              Contact Information
-            </h2>
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-black dark:text-white mb-2">
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                required
-                value={formData.email}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
-                placeholder="your@email.com"
-              />
-            </div>
-          </div>
+        <h1 className="text-4xl md:text-5xl font-bold text-black dark:text-white mb-12 animate-fade-in">
+          Checkout
+        </h1>
 
-          {/* Shipping Address */}
-          <div className="p-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg">
-            <h2 className="text-xl font-bold text-black dark:text-white mb-4">
-              Shipping Address
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="firstName" className="block text-sm font-medium text-black dark:text-white mb-2">
-                  First Name
-                </label>
-                <input
-                  type="text"
-                  id="firstName"
-                  name="firstName"
-                  required
-                  value={formData.firstName}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
-                />
-              </div>
-              <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-black dark:text-white mb-2">
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  id="lastName"
-                  name="lastName"
-                  required
-                  value={formData.lastName}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <label htmlFor="address" className="block text-sm font-medium text-black dark:text-white mb-2">
-                  Address
-                </label>
-                <input
-                  type="text"
-                  id="address"
-                  name="address"
-                  required
-                  value={formData.address}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
-                />
-              </div>
-              <div>
-                <label htmlFor="city" className="block text-sm font-medium text-black dark:text-white mb-2">
-                  City
-                </label>
-                <input
-                  type="text"
-                  id="city"
-                  name="city"
-                  required
-                  value={formData.city}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
-                />
-              </div>
-              <div>
-                <label htmlFor="postalCode" className="block text-sm font-medium text-black dark:text-white mb-2">
-                  Postal Code
-                </label>
-                <input
-                  type="text"
-                  id="postalCode"
-                  name="postalCode"
-                  required
-                  value={formData.postalCode}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <label htmlFor="country" className="block text-sm font-medium text-black dark:text-white mb-2">
-                  Country
-                </label>
-                <input
-                  type="text"
-                  id="country"
-                  name="country"
-                  required
-                  value={formData.country}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Payment Information */}
-          <div className="p-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-black dark:text-white">
-                Payment Information
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Checkout Form */}
+          <div className="lg:col-span-2 space-y-6 animate-fade-in">
+            {/* Contact Information */}
+            <div className="p-8 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl hover-lift">
+              <h2 className="text-xl font-bold text-black dark:text-white mb-6">
+                Contact Information
               </h2>
-              <Lock className="h-5 w-5 text-zinc-400" />
-            </div>
-            <div className="space-y-4">
               <div>
-                <label htmlFor="cardNumber" className="block text-sm font-medium text-black dark:text-white mb-2">
-                  Card Number
+                <label htmlFor="email" className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
+                  Email Address
                 </label>
                 <input
-                  type="text"
-                  id="cardNumber"
-                  name="cardNumber"
+                  type="email"
+                  id="email"
+                  name="email"
                   required
-                  placeholder="1234 5678 9012 3456"
-                  value={formData.cardNumber}
+                  value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
+                  className={inputClasses}
+                  placeholder="your@email.com"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+            </div>
+
+            {/* Shipping Address */}
+            <div className="p-8 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl hover-lift">
+              <h2 className="text-xl font-bold text-black dark:text-white mb-6">
+                Shipping Address
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                  <label htmlFor="expiryDate" className="block text-sm font-medium text-black dark:text-white mb-2">
-                    Expiry Date
+                  <label htmlFor="firstName" className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
+                    First Name
                   </label>
                   <input
                     type="text"
-                    id="expiryDate"
-                    name="expiryDate"
+                    id="firstName"
+                    name="firstName"
                     required
-                    placeholder="MM/YY"
-                    value={formData.expiryDate}
+                    value={formData.firstName}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
+                    className={inputClasses}
                   />
                 </div>
                 <div>
-                  <label htmlFor="cvv" className="block text-sm font-medium text-black dark:text-white mb-2">
-                    CVV
+                  <label htmlFor="lastName" className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
+                    Last Name
                   </label>
                   <input
                     type="text"
-                    id="cvv"
-                    name="cvv"
+                    id="lastName"
+                    name="lastName"
                     required
-                    placeholder="123"
-                    value={formData.cvv}
+                    value={formData.lastName}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
+                    className={inputClasses}
                   />
+                </div>
+                <div className="sm:col-span-2">
+                  <label htmlFor="address" className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
+                    Street Address
+                  </label>
+                  <input
+                    type="text"
+                    id="address"
+                    name="address"
+                    required
+                    value={formData.address}
+                    onChange={handleInputChange}
+                    className={inputClasses}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="city" className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
+                    City
+                  </label>
+                  <input
+                    type="text"
+                    id="city"
+                    name="city"
+                    required
+                    value={formData.city}
+                    onChange={handleInputChange}
+                    className={inputClasses}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="postalCode" className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
+                    Postal Code
+                  </label>
+                  <input
+                    type="text"
+                    id="postalCode"
+                    name="postalCode"
+                    required
+                    value={formData.postalCode}
+                    onChange={handleInputChange}
+                    className={inputClasses}
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label htmlFor="country" className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
+                    Country
+                  </label>
+                  <input
+                    type="text"
+                    id="country"
+                    name="country"
+                    required
+                    value={formData.country}
+                    onChange={handleInputChange}
+                    className={inputClasses}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Payment Information */}
+            <div className="p-8 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl hover-lift">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-black dark:text-white">
+                  Payment Information
+                </h2>
+                <div className="flex items-center gap-2 text-neutral-400">
+                  <Lock className="h-4 w-4" />
+                  <span className="text-sm">Secure</span>
+                </div>
+              </div>
+              <div className="space-y-5">
+                <div>
+                  <label htmlFor="cardNumber" className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
+                    Card Number
+                  </label>
+                  <input
+                    type="text"
+                    id="cardNumber"
+                    name="cardNumber"
+                    required
+                    placeholder="1234 5678 9012 3456"
+                    value={formData.cardNumber}
+                    onChange={handleInputChange}
+                    className={inputClasses}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-5">
+                  <div>
+                    <label htmlFor="expiryDate" className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
+                      Expiry Date
+                    </label>
+                    <input
+                      type="text"
+                      id="expiryDate"
+                      name="expiryDate"
+                      required
+                      placeholder="MM/YY"
+                      value={formData.expiryDate}
+                      onChange={handleInputChange}
+                      className={inputClasses}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="cvv" className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
+                      CVV
+                    </label>
+                    <input
+                      type="text"
+                      id="cvv"
+                      name="cvv"
+                      required
+                      placeholder="123"
+                      value={formData.cvv}
+                      onChange={handleInputChange}
+                      className={inputClasses}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Order Summary */}
-        <div className="lg:col-span-1">
-          <div className="sticky top-24 p-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg">
-            <h2 className="text-xl font-bold text-black dark:text-white mb-4">
-              Order Summary
-            </h2>
+          {/* Order Summary */}
+          <div className="lg:col-span-1 animate-fade-in stagger-1">
+            <div className="sticky top-24 p-8 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl">
+              <h2 className="text-xl font-bold text-black dark:text-white mb-6">
+                Order Summary
+              </h2>
 
-            <div className="space-y-3 mb-4">
-              {cart.items.map((item) => (
-                <div key={item.variantId} className="flex justify-between text-sm">
-                  <span className="text-zinc-600 dark:text-zinc-400">
-                    {item.title} x {item.quantity}
-                  </span>
-                  <span className="text-black dark:text-white font-medium">
-                    {(item.price * item.quantity).toFixed(2)} {item.currency}
-                  </span>
+              <div className="space-y-4 mb-6">
+                {cart.items.map((item) => (
+                  <div key={item.variantId} className="flex justify-between text-sm">
+                    <span className="text-neutral-600 dark:text-neutral-400">
+                      {item.title} × {item.quantity}
+                    </span>
+                    <span className="text-black dark:text-white font-medium">
+                      {formatPrice(item.price * item.quantity, item.currency)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="space-y-3 py-6 border-y border-neutral-200 dark:border-neutral-800">
+                <div className="flex justify-between text-sm">
+                  <span className="text-neutral-600 dark:text-neutral-400">Subtotal</span>
+                  <span className="text-black dark:text-white">{formatPrice(cart.total, cart.currency)}</span>
                 </div>
-              ))}
+                <div className="flex justify-between text-sm">
+                  <span className="text-neutral-600 dark:text-neutral-400">Shipping</span>
+                  <span className="text-green-600 dark:text-green-400 font-medium">Free</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-neutral-600 dark:text-neutral-400">Tax (10%)</span>
+                  <span className="text-black dark:text-white">{formatPrice(cart.total * 0.1, cart.currency)}</span>
+                </div>
+              </div>
+
+              <div className="py-6 mb-6">
+                <div className="flex justify-between text-xl font-bold text-black dark:text-white">
+                  <span>Total</span>
+                  <span>{formatPrice(cart.total * 1.1, cart.currency)}</span>
+                </div>
+              </div>
+
+              <Button
+                type="submit"
+                size="lg"
+                className="w-full mb-4"
+                isLoading={isProcessing}
+                disabled={isProcessing}
+              >
+                <CreditCard className="h-5 w-5 mr-2" />
+                {isProcessing ? 'Processing...' : 'Place Order'}
+              </Button>
+
+              <div className="flex items-center justify-center gap-4 pt-4 border-t border-neutral-200 dark:border-neutral-800">
+                <div className="flex items-center gap-1.5 text-neutral-400">
+                  <Shield className="h-4 w-4" />
+                  <span className="text-xs">Secure</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-neutral-400">
+                  <Truck className="h-4 w-4" />
+                  <span className="text-xs">Free Shipping</span>
+                </div>
+              </div>
             </div>
-
-            <div className="space-y-2 mb-4 pt-4 border-t border-zinc-200 dark:border-zinc-800">
-              <div className="flex justify-between text-sm text-zinc-600 dark:text-zinc-400">
-                <span>Subtotal</span>
-                <span>{cart.total.toFixed(2)} {cart.currency}</span>
-              </div>
-              <div className="flex justify-between text-sm text-zinc-600 dark:text-zinc-400">
-                <span>Shipping</span>
-                <span>Free</span>
-              </div>
-              <div className="flex justify-between text-sm text-zinc-600 dark:text-zinc-400">
-                <span>Tax</span>
-                <span>{(cart.total * 0.1).toFixed(2)} {cart.currency}</span>
-              </div>
-            </div>
-
-            <div className="pt-4 border-t border-zinc-200 dark:border-zinc-800 mb-6">
-              <div className="flex justify-between text-xl font-bold text-black dark:text-white">
-                <span>Total</span>
-                <span>{(cart.total * 1.1).toFixed(2)} {cart.currency}</span>
-              </div>
-            </div>
-
-            <Button
-              type="submit"
-              size="lg"
-              className="w-full"
-              isLoading={isProcessing}
-              disabled={isProcessing}
-            >
-              <CreditCard className="h-5 w-5 mr-2" />
-              {isProcessing ? 'Processing...' : 'Place Order'}
-            </Button>
-
-            <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-4 text-center">
-              Your payment information is secure and encrypted
-            </p>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 }

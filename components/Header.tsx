@@ -2,100 +2,159 @@
 
 import Link from 'next/link';
 import { ShoppingCart, Search, Menu, X } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCart } from '@/lib/hooks/useCart';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const { itemCount } = useCart();
 
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMenuOpen]);
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/95 backdrop-blur supports-backdrop-filter:bg-white/60">
-      <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <div className="flex items-center">
-            <Link href="/" className="text-xl font-bold text-black dark:text-white">
-              Exzort Gear
-            </Link>
-          </div>
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <Link href="/products" className="text-sm font-medium text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors">
-              All Products
-            </Link>
-            <Link href="/collections" className="text-sm font-medium text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors">
-              Collections
-            </Link>
-            <Link href="/about" className="text-sm font-medium text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors">
-              About
-            </Link>
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className="p-2 text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors"
-              aria-label="Search"
+    <>
+      <header 
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+          isScrolled 
+            ? 'bg-white/80 dark:bg-black/80 backdrop-blur-xl shadow-sm border-b border-neutral-200/50 dark:border-neutral-800/50' 
+            : 'bg-transparent'
+        }`}
+      >
+        <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex h-20 items-center justify-between">
+            {/* Logo */}
+            <Link 
+              href="/" 
+              className="text-xl font-bold text-black dark:text-white transition-transform hover:scale-105"
             >
-              <Search className="h-5 w-5" />
-            </button>
-
-            <Link href="/cart" className="relative p-2 text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors">
-              <ShoppingCart className="h-5 w-5" />
-              {itemCount > 0 && (
-                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-black dark:bg-white text-white dark:text-black text-xs flex items-center justify-center font-medium">
-                  {itemCount}
-                </span>
-              )}
+              Exzort<span className="text-neutral-400">Gear</span>
             </Link>
 
-            {/* Mobile menu button */}
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 text-zinc-600 dark:text-zinc-300"
-              aria-label="Menu"
-            >
-              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
-          </div>
-        </div>
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-12">
+              {['Products', 'Collections', 'About'].map((item) => (
+                <Link 
+                  key={item}
+                  href={`/${item.toLowerCase()}`} 
+                  className="relative text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white transition-colors group"
+                >
+                  {item}
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-black dark:bg-white transition-all duration-300 group-hover:w-full" />
+                </Link>
+              ))}
+            </div>
 
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-zinc-200 dark:border-zinc-800">
-            <div className="flex flex-col space-y-4">
-              <Link href="/products" className="text-sm font-medium text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors">
-                All Products
+            {/* Actions */}
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setIsSearchOpen(!isSearchOpen)}
+                className="p-3 rounded-full text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-all duration-300"
+                aria-label="Search"
+              >
+                <Search className="h-5 w-5" />
+              </button>
+
+              <Link 
+                href="/cart" 
+                className="relative p-3 rounded-full text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-all duration-300"
+              >
+                <ShoppingCart className="h-5 w-5" />
+                {itemCount > 0 && (
+                  <span className="absolute top-1 right-1 h-5 w-5 rounded-full bg-black dark:bg-white text-white dark:text-black text-xs flex items-center justify-center font-bold animate-scale-in">
+                    {itemCount}
+                  </span>
+                )}
               </Link>
-              <Link href="/collections" className="text-sm font-medium text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors">
-                Collections
-              </Link>
-              <Link href="/about" className="text-sm font-medium text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors">
-                About
-              </Link>
+
+              {/* Mobile menu button */}
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="md:hidden p-3 rounded-full text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-all duration-300"
+                aria-label="Menu"
+              >
+                {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </button>
             </div>
           </div>
-        )}
+        </nav>
 
-        {/* Search Bar */}
-        {isSearchOpen && (
-          <div className="py-4 border-t border-zinc-200 dark:border-zinc-800">
-            <form action="/search" method="GET" className="w-full">
+        {/* Search Bar - Animated dropdown */}
+        <div 
+          className={`overflow-hidden transition-all duration-300 ${
+            isSearchOpen ? 'max-h-24 opacity-100' : 'max-h-0 opacity-0'
+          }`}
+        >
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <form action="/search" method="GET" className="w-full max-w-2xl mx-auto">
               <input
                 type="search"
                 name="q"
                 placeholder="Search products..."
-                className="w-full px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
-                autoFocus
+                className="w-full px-6 py-4 rounded-full border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-black dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition-all duration-300"
+                autoFocus={isSearchOpen}
               />
             </form>
           </div>
-        )}
-      </nav>
-    </header>
+        </div>
+      </header>
+
+      {/* Mobile Navigation Overlay */}
+      <div 
+        className={`fixed inset-0 z-40 md:hidden transition-all duration-500 ${
+          isMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+      >
+        {/* Backdrop */}
+        <div 
+          className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+          onClick={() => setIsMenuOpen(false)}
+        />
+        
+        {/* Menu Panel */}
+        <div 
+          className={`absolute right-0 top-0 bottom-0 w-80 bg-white dark:bg-black border-l border-neutral-200 dark:border-neutral-800 transition-transform duration-500 ${
+            isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
+        >
+          <div className="flex flex-col p-8 pt-24">
+            {['Products', 'Collections', 'About', 'Cart'].map((item, index) => (
+              <Link 
+                key={item}
+                href={`/${item.toLowerCase()}`}
+                onClick={() => setIsMenuOpen(false)}
+                className={`text-2xl font-medium text-black dark:text-white py-4 border-b border-neutral-100 dark:border-neutral-900 hover:text-neutral-500 transition-all duration-300 animate-fade-in`}
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                {item}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Spacer for fixed header */}
+      <div className="h-20" />
+    </>
   );
 }
