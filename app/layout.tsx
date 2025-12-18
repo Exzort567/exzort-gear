@@ -20,11 +20,12 @@ export const metadata: Metadata = {
   title: "Exzort Gear - Premium Tech Equipment",
   description: "Shop the best tech gear including keyboards, mice, headphones, and more. Built with Next.js and Shopify.",
   keywords: ["tech gear", "keyboards", "mice", "headphones", "gaming equipment", "e-commerce"],
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 5,
-  },
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 export default function RootLayout({
