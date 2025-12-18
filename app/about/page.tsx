@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import Link from 'next/link';
 import { Code2, Layers, Zap, Shield, Palette, Globe, Check } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -141,7 +142,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center animate-fade-in">
@@ -151,12 +151,12 @@ export default function AboutPage() {
             <p className="text-lg text-neutral-600 dark:text-neutral-400 mb-8">
               I'm available for freelance Shopify development projects. Let's build something amazing.
             </p>
-            <a 
-              href="mailto:contact@exzortgear.com"
+            <Link 
+              href="/contact"
               className="inline-flex items-center justify-center px-8 py-4 bg-black dark:bg-white text-white dark:text-black font-semibold rounded-full hover:scale-105 transition-transform duration-300"
             >
               Get in Touch
-            </a>
+            </Link>
           </div>
         </div>
       </section>

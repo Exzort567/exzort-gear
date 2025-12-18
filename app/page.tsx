@@ -181,39 +181,21 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Newsletter / CTA Section */}
-      <section className="py-16 md:py-24 relative overflow-hidden bg-black dark:bg-white">
-        {/* Background pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0" style={{ 
-            backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)',
-            backgroundSize: '32px 32px'
-          }} />
-        </div>
-
-        {/* Animated blobs */}
-        <div className="absolute top-0 left-0 w-64 h-64 md:w-96 md:h-96 bg-neutral-800 dark:bg-neutral-200 rounded-full blur-3xl opacity-30" style={{ animation: 'blob 8s ease-in-out infinite' }} />
-        <div className="absolute bottom-0 right-0 w-64 h-64 md:w-96 md:h-96 bg-neutral-800 dark:bg-neutral-200 rounded-full blur-3xl opacity-30" style={{ animation: 'blob 10s ease-in-out infinite', animationDelay: '3s' }} />
-
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white dark:text-black mb-4 md:mb-6 animate-fade-in">
-              Elevate Your Workspace
+      <section className="py-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto text-center animate-fade-in">
+            <h2 className="text-3xl md:text-4xl font-bold text-black dark:text-white mb-6">
+              Ready to Work Together?
             </h2>
-            <p className="text-lg md:text-xl text-neutral-300 dark:text-neutral-700 mb-8 md:mb-10 animate-fade-in stagger-1">
-              Experience the perfect blend of performance and aesthetics with our premium collection.
+            <p className="text-lg text-neutral-600 dark:text-neutral-400 mb-8">
+              I'm available for freelance Shopify development projects. Let's build something amazing.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center animate-fade-in stagger-2">
-              <Link href="/products">
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="w-full sm:w-auto text-base md:text-lg px-8 md:px-10 py-3 md:py-4 rounded-full border-2 border-white dark:border-black text-white dark:text-black hover:bg-white hover:text-black dark:hover:bg-black dark:hover:text-white transition-all duration-300"
-                >
-                  Shop Now
-                </Button>
-              </Link>
-            </div>
+            <Link 
+              href="/contact"
+              className="inline-flex items-center justify-center px-8 py-4 bg-black dark:bg-white text-white dark:text-black font-semibold rounded-full hover:scale-105 transition-transform duration-300"
+            >
+              Get in Touch
+            </Link>
           </div>
         </div>
       </section>
