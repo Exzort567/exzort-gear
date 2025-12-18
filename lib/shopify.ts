@@ -11,7 +11,49 @@ export async function fetchShopify({ query, variables } : { query: string; varia
             "X-Shopify-Storefront-Access-Token": storefrontAccessToken || "",
         },
         body: JSON.stringify({ query, variables }),
+        next: { revalidate: 3600 } // Cache for 1 hour
     });
 
-    return response.json();
+    if (!response.ok) {
+        throw new Error(`Shopify API error: ${response.statusText}`);
+    }
+
+    const json = await response.json();
+    
+    if (json.errors) {
+        console.error('Shopify GraphQL errors:', json.errors);
+        throw new Error('GraphQL query failed');
+    }
+
+    return json;
+}
+
+// Helper function to create Shopify checkout
+export async function createCheckout(lineItems: Array<{ variantId: string; quantity: number }>) {
+    const mutation = `
+        mutation checkoutCreate($input: CheckoutCreateInput!) {
+            checkoutCreate(input: $input) {
+                checkout {
+                    id
+                    webUrl
+                }
+                checkoutUserErrors {
+                    message
+                    field
+                }
+            }
+        }
+    `;
+
+    const variables = {
+        input: {
+            lineItems: lineItems.map(item => ({
+                variantId: item.variantId,
+                quantity: item.quantity
+            }))
+        }
+    };
+
+    const response = await fetchShopify({ query: mutation, variables });
+    return response.data?.checkoutCreate;
 }
