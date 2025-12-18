@@ -103,7 +103,7 @@ export default function Header() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-12">
-              {['Products', 'Collections', 'About'].map((item) => (
+              {['Products', 'Collections', 'Orders', 'About'].map((item) => (
                 <Link 
                   key={item}
                   href={`/${item.toLowerCase()}`} 
@@ -190,7 +190,7 @@ export default function Header() {
           }`}
         >
           <div className="flex flex-col p-8 pt-24">
-            {['Products', 'Collections', 'About', 'Cart'].map((item, index) => (
+            {['Products', 'Collections', 'Orders', 'About', 'Cart'].map((item, index) => (
               <Link 
                 key={item}
                 href={`/${item.toLowerCase()}`}

@@ -1,8 +1,40 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Button from '@/components/Button';
-import { CheckCircle, Package, Mail, Truck } from 'lucide-react';
+import { CheckCircle, Package, Mail, Truck, Copy, Check } from 'lucide-react';
+import { getOrderByNumber } from '@/lib/orderStorage';
+import { Order } from '@/lib/types/order';
 
 export default function CheckoutSuccessPage() {
+  const searchParams = useSearchParams();
+  const orderNumber = searchParams.get('orderNumber');
+  const [order, setOrder] = useState<Order | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (orderNumber) {
+      const foundOrder = getOrderByNumber(orderNumber);
+      setOrder(foundOrder);
+    }
+  }, [orderNumber]);
+
+  const copyOrderNumber = () => {
+    if (orderNumber) {
+      navigator.clipboard.writeText(orderNumber);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const formatPrice = (amount: number, currency: string) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+    }).format(amount);
+  };
   return (
     <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -25,7 +57,24 @@ export default function CheckoutSuccessPage() {
             <p className="text-lg text-neutral-600 dark:text-neutral-400 mb-2">
               Thank you for your order.
             </p>
-            <p className="text-neutral-500 dark:text-neutral-500">
+            {order && (
+              <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-neutral-100 dark:bg-neutral-800 rounded-full">
+                <span className="text-sm text-neutral-600 dark:text-neutral-400">Order Number:</span>
+                <span className="text-sm font-bold text-black dark:text-white">{order.orderNumber}</span>
+                <button
+                  onClick={copyOrderNumber}
+                  className="p-1 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded transition-colors"
+                  title="Copy order number"
+                >
+                  {copied ? (
+                    <Check className="h-4 w-4 text-green-600" />
+                  ) : (
+                    <Copy className="h-4 w-4 text-neutral-400" />
+                  )}
+                </button>
+              </div>
+            )}
+            <p className="text-neutral-500 dark:text-neutral-500 mt-4">
               We've sent a confirmation email with your order details.
             </p>
           </div>
@@ -56,11 +105,18 @@ export default function CheckoutSuccessPage() {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10 animate-fade-in stagger-3">
+            {order && (
+              <Link href={`/orders/${order.orderNumber}`}>
+                <Button size="lg" className="w-full sm:w-auto">
+                  <Package className="h-4 w-4 mr-2" />
+                  Track Order
+                </Button>
+              </Link>
+            )}
             <Link href="/products">
-              <Button size="lg" className="w-full sm:w-auto">Continue Shopping</Button>
-            </Link>
-            <Link href="/">
-              <Button variant="outline" size="lg" className="w-full sm:w-auto">Back to Home</Button>
+              <Button variant={order ? "outline" : "default"} size="lg" className="w-full sm:w-auto">
+                Continue Shopping
+              </Button>
             </Link>
           </div>
 

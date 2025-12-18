@@ -1,11 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useCart } from '@/lib/hooks/useCart';
 import Button from '@/components/Button';
 import { CreditCard, Lock, ArrowLeft, Shield, Truck } from 'lucide-react';
+import { saveOrder, generateOrderNumber, generateTrackingNumber } from '@/lib/orderStorage';
+import { Order } from '@/lib/types/order';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -24,6 +26,13 @@ export default function CheckoutPage() {
     cvv: '',
   });
 
+  // Redirect to cart if empty
+  useEffect(() => {
+    if (cart.items.length === 0) {
+      router.push('/cart');
+    }
+  }, [cart.items.length, router]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
@@ -38,9 +47,47 @@ export default function CheckoutPage() {
     // Simulate checkout process
     await new Promise(resolve => setTimeout(resolve, 2000));
 
-    // Clear cart and redirect to success page
+    // Create order object
+    const orderNumber = generateOrderNumber();
+    const trackingNumber = generateTrackingNumber();
+    
+    const order: Order = {
+      id: crypto.randomUUID(),
+      orderNumber,
+      date: new Date().toISOString(),
+      status: 'processing',
+      customer: {
+        email: formData.email,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+      },
+      shippingAddress: {
+        address: formData.address,
+        city: formData.city,
+        postalCode: formData.postalCode,
+        country: formData.country,
+      },
+      items: cart.items.map(item => ({
+        id: item.variantId,
+        title: item.title,
+        quantity: item.quantity,
+        price: item.price,
+        image: item.image,
+      })),
+      subtotal: cart.total,
+      tax: cart.total * 0.1,
+      shipping: 0,
+      total: cart.total * 1.1,
+      currency: cart.currency,
+      trackingNumber,
+    };
+
+    // Save order to local storage
+    saveOrder(order);
+
+    // Clear cart and redirect to success page with order number
     clearCart();
-    router.push('/checkout/success');
+    router.push(`/checkout/success?orderNumber=${orderNumber}`);
   };
 
   // Format currency
@@ -51,8 +98,8 @@ export default function CheckoutPage() {
     }).format(amount);
   };
 
+  // Show loading or nothing while redirecting
   if (cart.items.length === 0) {
-    router.push('/cart');
     return null;
   }
 
@@ -200,9 +247,17 @@ export default function CheckoutPage() {
                 </h2>
                 <div className="flex items-center gap-2 text-neutral-400">
                   <Lock className="h-4 w-4" />
-                  <span className="text-sm">Secure</span>
+                  <span className="text-sm">Demo Mode</span>
                 </div>
               </div>
+              
+              {/* Demo Notice */}
+              <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+                <p className="text-sm text-blue-800 dark:text-blue-200">
+                  <strong>Demo Store:</strong> No real payment will be processed. You can enter any card details.
+                </p>
+              </div>
+              
               <div className="space-y-5">
                 <div>
                   <label htmlFor="cardNumber" className="block text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
