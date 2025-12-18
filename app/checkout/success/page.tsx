@@ -114,7 +114,7 @@ export default function CheckoutSuccessPage() {
               </Link>
             )}
             <Link href="/products">
-              <Button variant={order ? "outline" : "default"} size="lg" className="w-full sm:w-auto">
+              <Button variant={order ? "outline" : "primary"} size="lg" className="w-full sm:w-auto">
                 Continue Shopping
               </Button>
             </Link>
