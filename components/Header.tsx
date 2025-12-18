@@ -2,14 +2,20 @@
 
 import Link from 'next/link';
 import { ShoppingCart, Search, Menu, X } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useCart } from '@/lib/hooks/useCart';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const { itemCount } = useCart();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const isSearchPage = pathname === '/search';
 
   // Handle scroll effect
   useEffect(() => {
@@ -19,6 +25,50 @@ export default function Header() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Close search bar when navigating to a different page (not search page)
+  useEffect(() => {
+    if (!isSearchPage && isSearchOpen) {
+      setIsSearchOpen(false);
+    }
+  }, [pathname, isSearchPage]);
+
+  // Initialize search query from URL params
+  useEffect(() => {
+    const query = searchParams.get('q') || '';
+    setSearchQuery(query);
+  }, [searchParams]);
+
+  // Debounced search - triggers search automatically as user types
+  useEffect(() => {
+    if (!isSearchOpen) return;
+
+    const timer = setTimeout(() => {
+      // Only navigate if we're not already on search page with same query
+      const currentQuery = searchParams.get('q') || '';
+      const newQuery = searchQuery.trim();
+      
+      if (newQuery !== currentQuery) {
+        if (!isSearchPage) {
+          // Navigate to search page with query
+          router.push(`/search${newQuery ? `?q=${encodeURIComponent(newQuery)}` : ''}`);
+        } else {
+          // Already on search page, just update URL params without full navigation
+          const url = new URL(window.location.href);
+          if (newQuery) {
+            url.searchParams.set('q', newQuery);
+          } else {
+            url.searchParams.delete('q');
+          }
+          window.history.replaceState({}, '', url.toString());
+          // Trigger a soft refresh to update search results
+          router.replace(url.pathname + url.search);
+        }
+      }
+    }, 400); // Increased from 300ms to 400ms for smoother typing
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, router, isSearchOpen, isSearchPage, searchParams]);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -106,15 +156,17 @@ export default function Header() {
           }`}
         >
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <form action="/search" method="GET" className="w-full max-w-2xl mx-auto">
+            <div className="w-full max-w-2xl mx-auto">
               <input
                 type="search"
                 name="q"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search products..."
                 className="w-full px-6 py-4 rounded-full border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-black dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition-all duration-300"
                 autoFocus={isSearchOpen}
               />
-            </form>
+            </div>
           </div>
         </div>
       </header>

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Github, Twitter, Linkedin, ArrowUpRight } from 'lucide-react';
+import { Github, Twitter, Linkedin, ArrowUpRight, Globe } from 'lucide-react';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -20,9 +20,9 @@ export default function Footer() {
             </p>
             <div className="flex items-center gap-4 mt-6">
               {[
-                { icon: Github, href: 'https://github.com', label: 'GitHub' },
-                { icon: Twitter, href: 'https://twitter.com', label: 'Twitter' },
-                { icon: Linkedin, href: 'https://linkedin.com', label: 'LinkedIn' },
+                { icon: Github, href: 'https://github.com/Exzort567', label: 'GitHub' },
+                { icon: Globe, href: 'https://kensanity.is-a.dev/', label: 'Portfolio' },
+                { icon: Linkedin, href: 'https://www.linkedin.com/in/kennethquibel/', label: 'LinkedIn' },
               ].map(({ icon: Icon, href, label }) => (
                 <a 
                   key={label}
@@ -66,7 +66,7 @@ export default function Footer() {
                 Company
               </h4>
               <ul className="space-y-3">
-                {['About', 'Contact', 'Privacy'].map((item) => (
+                {['About', 'Contact'].map((item) => (
                   <li key={item}>
                     <Link 
                       href={`/${item.toLowerCase()}`} 
